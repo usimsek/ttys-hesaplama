@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ulaşım Ağı Servis Hesaplama</title>
+    <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        h1 {
+            background-color: #3a6ea5;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .tabs {
+            display: flex;
+            background-color: #f0f2f5;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: #555;
+        }
+        .tab-button:hover {
+            background-color: #e0e4e9;
+        }
+        .tab-button.active {
+            background-color: #fff;
+            color: #3a6ea5;
+            border-bottom: 3px solid #3a6ea5;
+        }
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #3a6ea5;
+            outline: none;
+            box-shadow: 0 0 5px rgba(58, 110, 165, 0.2);
+        }
+        button {
+            background-color: #3a6ea5;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2c5282;
+        }
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+        #result h3 {
+            color: #3a6ea5;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        #result p {
+            background-color: #f9f9f9;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .result-highlight {
+            font-weight: bold;
+            color: #3a6ea5;
+        }
+        .result-warning {
+            font-weight: bold;
+            color: #e67e22;
+        }
+        .info-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid #3a6ea5;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        @media (max-width: 600px) {
+            .tab-button {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            .tab-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ulaşım Ağı Servis Hesaplama</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('driversToServices')">Şoför ve Otobüsten Servis</button>
+            <button class="tab-button" onclick="openTab('servicesToDrivers')">Servisten Şoför ve Otobüs</button>
+        </div>
+
+        <!-- Şoför ve Otobüsten Servis Hesaplama -->
+        <div id="driversToServices" class="tab-content active">
+            <div class="input-group">
+                <label for="driverCount">Toplam Şoför Sayısı:</label>
+                <input type="number" id="driverCount" min="1" placeholder="Ör: 100" required>
+            </div>
+            <div class="input-group">
+                <label for="busCount">Toplam Otobüs Sayısı:</label>
+                <input type="number" id="busCount" min="1" placeholder="Ör: 60" required>
+            </div>
+            <div class="input-group">
+                <label for="restDays1">Haftalık Yasal İzin Günü:</label>
+                <select id="restDays1" required>
+                    <option value="1">1 Gün</option>
+                    <option value="2">2 Gün</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="extraRest1">Günlük Ek İzinli Şoför Sayısı (Opsiyonel):</label>
+                <input type="number" id="extraRest1" min="0" placeholder="Ör: 5" step="1">
+            </div>
+            <div class="input-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spareDriversCheckbox1">
+                    <label class="checkbox-label" for="spareDriversCheckbox1">Yedek Şoför İstiyorum</label>
+                </div>
+                <label for="sparePercentage1">Yedek Yüzdesi (%):</label>
+                <input type="number" id="sparePercentage1" min="0" max="100" placeholder="Ör: 10" step="1">
+            </div>
+            <button onclick="calculate('driversToServices')">Hesapla</button>
+        </div>
+
+        <!-- Servisten Şoför ve Otobüs Hesaplama -->
+        <div id="servicesToDrivers" class="tab-content">
+            <div class="input-group">
+                <label for="serviceCount">Gerekli Servis Sayısı:</label>
+                <input type="number" id="serviceCount" min="1" placeholder="Ör: 86" required>
+            </div>
+            <div class="input-group">
+                <label for="restDays2">Haftalık Yasal İzin Günü:</label>
+                <select id="restDays2" required>
+                    <option value="1">1 Gün</option>
+                    <option value="2">2 Gün</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="extraRest2">Günlük Ek İzinli Şoför Sayısı (Opsiyonel):</label>
+                <input type="number" id="extraRest2" min="0" placeholder="Ör: 5" step="1">
+            </div>
+            <div class="input-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="spareDriversCheckbox2">
+                    <label class="checkbox-label" for="spareDriversCheckbox2">Yedek Şoför İstiyorum</label>
+                </div>
+                <label for="sparePercentage2">Yedek Yüzdesi (%):</label>
+                <input type="number" id="sparePercentage2" min="0" max="100" placeholder="Ör: 10" step="1">
+            </div>
+            <button onclick="calculate('servicesToDrivers')">Hesapla</button>
+        </div>
+
+        <div id="result">
+            <h3>Sonuçlar:</h3>
+            <p id="totalServices"></p>
+            <p id="normalBuses"></p>
+            <p id="breakBuses"></p>
+            <p id="driverUsage"></p>
+            <p id="decisionLogic"></p>
+            <p id="constraint"></p>
+            <p id="suggestions"></p>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            const tabs = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            const buttons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function calculate(mode) {
+            const daysPerWeek = 7;
+
+            if (mode === 'driversToServices') {
+                const driverCount = parseInt(document.getElementById('driverCount').value);
+                const busCount = parseInt(document.getElementById('busCount').value);
+                const restDays = parseInt(document.getElementById('restDays1').value);
+                const extraRest = parseInt(document.getElementById('extraRest1').value) || 0;
+                const spareDriversCheckbox = document.getElementById('spareDriversCheckbox1').checked;
+                const sparePercentage = parseInt(document.getElementById('sparePercentage1').value) || 0;
+
+                const activeDays = daysPerWeek - restDays;
+                let activeDrivers = Math.round(driverCount * activeDays / daysPerWeek);
+                activeDrivers = Math.max(0, activeDrivers - extraRest);
+
+                let spareDrivers = 0;
+                let workingDrivers = activeDrivers;
+                if (spareDriversCheckbox && sparePercentage > 0) {
+                    spareDrivers = Math.ceil(activeDrivers * (sparePercentage / 100));
+                    workingDrivers = activeDrivers - spareDrivers;
+                }
+
+                let normalBuses = Math.min(Math.floor(workingDrivers / 2), busCount);
+                const remainingDrivers = workingDrivers - (2 * normalBuses);
+                let breakBuses = Math.min(remainingDrivers, busCount - normalBuses);
+
+                if (normalBuses + breakBuses > busCount) {
+                    breakBuses = busCount - normalBuses;
+                }
+
+                const totalServices = (normalBuses * 2) + breakBuses;
+                const usedDrivers = (normalBuses * 2) + breakBuses;
+                const restingDrivers = driverCount - activeDrivers;
+                const spareBuses = busCount - (normalBuses + breakBuses);
+
+                const decisionLogic = `Karar Mantığı: Normal çalışma (2 servis, 2 şoför) daha fazla sefer sunduğu için öncelikli olarak maksimize edildi. ${normalBuses} otobüs normal çalışmaya atanarak ${normalBuses * 2} servis elde edildi. Kalan ${remainingDrivers} şoför ve ${busCount - normalBuses} otobüs ile ${breakBuses} otobüs ara dinlenmeli çalışmaya atandı.`;
+                let constraint = spareBuses > 0 ? `Kısıtlayıcı Faktör: Şoför sayısı. ${spareBuses} otobüs şoför yetersizliği nedeniyle kullanılamıyor.` :
+                    (usedDrivers < workingDrivers ? `Kısıtlayıcı Faktör: Otobüs sayısı. ${workingDrivers - usedDrivers} şoför otobüs yetersizliği nedeniyle kullanılamıyor.` :
+                    `Kısıtlayıcı Faktör: Yok. Sistem dengeli.`);
+
+                let suggestions = "";
+                if (spareBuses > 0) suggestions += `Uyarı: ${spareBuses} otobüs kullanılmıyor. Daha fazla şoför ekleyebilirsiniz.<br>`;
+                if (usedDrivers < workingDrivers) suggestions += `Not: ${workingDrivers - usedDrivers} şoför kullanılmıyor, rotasyon için hazır olabilir.<br>`;
+                suggestions += `İzin Durumu: Her gün yaklaşık ${restingDrivers} şoför izin kullanıyor (Yasal: ${Math.round(driverCount * restDays / daysPerWeek)}, Ek İzin: ${extraRest}).<br>`;
+                if (spareDriversCheckbox && sparePercentage > 0) {
+                    suggestions += `Yedek Şoför: ${spareDrivers} şoför (${sparePercentage}%) yedek olarak ayrıldı.`;
+                }
+
+                document.getElementById('totalServices').innerHTML = `Toplam Gerekli Servis Sayısı: ${totalServices}`;
+                document.getElementById('normalBuses').innerHTML = `Normal Çalışan Otobüsler: ${normalBuses} (Toplam ${normalBuses * 2} servis)`;
+                document.getElementById('breakBuses').innerHTML = `Ara Dinlenmeli Otobüsler: ${breakBuses} (Toplam ${breakBuses} servis)`;
+                document.getElementById('driverUsage').innerHTML = `Günlük Aktif Şoför Sayısı: ${activeDrivers} (Kullanılan: ${usedDrivers}${spareDriversCheckbox && sparePercentage > 0 ? `, Yedek: ${spareDrivers}` : ''})`;
+                document.getElementById('decisionLogic').innerHTML = decisionLogic;
+                document.getElementById('constraint').innerHTML = constraint;
+                document.getElementById('suggestions').innerHTML = `Öneriler: ${suggestions}`;
+            } else {
+                const serviceCount = parseInt(document.getElementById('serviceCount').value);
+                const restDays = parseInt(document.getElementById('restDays2').value);
+                const extraRest = parseInt(document.getElementById('extraRest2').value) || 0;
+                const spareDriversCheckbox = document.getElementById('spareDriversCheckbox2').checked;
+                const sparePercentage = parseInt(document.getElementById('sparePercentage2').value) || 0;
+
+                const normalBuses = Math.floor(serviceCount / 2);
+                const breakBuses = serviceCount % 2;
+                const totalBuses = normalBuses + breakBuses;
+                let minDriversNeeded = (normalBuses * 2) + breakBuses;
+
+                const activeDays = daysPerWeek - restDays;
+                const activeDriversRatio = activeDays / daysPerWeek;
+                let totalDriverCountBeforeExtra = Math.ceil(minDriversNeeded / activeDriversRatio);
+                let totalDriverCount = Math.ceil(totalDriverCountBeforeExtra + (extraRest * daysPerWeek / activeDays));
+                let restingDrivers = totalDriverCount - minDriversNeeded;
+
+                if (spareDriversCheckbox && sparePercentage > 0) {
+                    const spareDrivers = Math.ceil(minDriversNeeded * (sparePercentage / (100 - sparePercentage)));
+                    minDriversNeeded += spareDrivers;
+                    totalDriverCountBeforeExtra = Math.ceil(minDriversNeeded / activeDriversRatio);
+                    totalDriverCount = Math.ceil(totalDriverCountBeforeExtra + (extraRest * daysPerWeek / activeDays));
+                    restingDrivers = totalDriverCount - minDriversNeeded;
+
+                    var spareDriversText = `, Yedek: ${spareDrivers}`;
+                } else {
+                    var spareDriversText = '';
+                }
+
+                const decisionLogic = `Karar Mantığı: ${serviceCount} servis sağlamak için normal çalışma (2 servis, 2 şoför) maksimize edildi. ${normalBuses} otobüs normal çalışmaya atanarak ${normalBuses * 2} servis elde edildi. Kalan ${serviceCount - (normalBuses * 2)} servis için ${breakBuses} otobüs ara dinlenmeli çalışmaya atandı.`;
+                const constraint = totalBuses > minDriversNeeded ? `Kısıtlayıcı Faktör: Otobüs sayısı. Daha fazla otobüs gerekiyor.` :
+                    `Kısıtlayıcı Faktör: Şoför sayısı. Daha fazla şoför gerekiyor.`;
+
+                let suggestions = `İzin Durumu: Her gün yaklaşık ${restingDrivers} şoför izin kullanıyor (Yasal: ${Math.round(totalDriverCount * restDays / daysPerWeek)}, Ek İzin: ${extraRest}).<br>`;
+                suggestions += `Not: Bu, minimum şoför ve otobüs sayısını temsil eder.<br>`;
+                if (spareDriversCheckbox && sparePercentage > 0) {
+                    suggestions += `Yedek Şoför: ${minDriversNeeded - (normalBuses * 2 + breakBuses)} şoför (${sparePercentage}%) yedek olarak ayrıldı.`;
+                }
+
+                document.getElementById('totalServices').innerHTML = `Hedef Servis Sayısı: ${serviceCount}`;
+                document.getElementById('normalBuses').innerHTML = `Normal Çalışan Otobüsler: ${normalBuses} (Toplam ${normalBuses * 2} servis)`;
+                document.getElementById('breakBuses').innerHTML = `Ara Dinlenmeli Otobüsler: ${breakBuses} (Toplam ${breakBuses} servis)`;
+                document.getElementById('driverUsage').innerHTML = `Minimum Şoför Sayısı: ${totalDriverCount} (Günlük Aktif: ${minDriversNeeded}${spareDriversText})`;
+                document.getElementById('decisionLogic').innerHTML = decisionLogic;
+                document.getElementById('constraint').innerHTML = `Minimum Otobüs Sayısı: ${totalBuses}`;
+                document.getElementById('suggestions').innerHTML = `Öneriler: ${suggestions}`;
+            }
+            document.getElementById('result').style.display = 'block';
+        }
+
+        // İlk açılışta varsayılan tab
+        openTab('driversToServices');
+    </script>
+</body>
+</html>
